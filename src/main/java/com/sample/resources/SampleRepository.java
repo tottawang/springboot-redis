@@ -12,16 +12,21 @@ import com.sample.domain.User;
 @Repository
 public class SampleRepository {
 
-  @Cacheable("users")
+  @Cacheable(value = "users", keyGenerator = "usersKeyGenerator")
   public List<User> getUsers() {
     System.out.println("getUsers gets called");
     List<User> users = new ArrayList<>();
-    users.add(new User(0L, "user0"));
-    users.add(new User(1L, "user1"));
+    users.add(new User(Long.valueOf(0L), "user0"));
+    users.add(new User(Long.valueOf(1L), "user1"));
     return users;
   }
 
-  @Cacheable(value = "emptyUsers", unless = "#result?.isEmpty()")
+  /**
+   * Verify query for empty results can be cached as well
+   * 
+   * @return
+   */
+  @Cacheable(value = "emptyUsers")
   public List<User> getEmptyUsers() {
     System.out.println("getEmptyUsers gets called");
     List<User> users = new ArrayList<>();
