@@ -7,6 +7,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
@@ -19,6 +20,9 @@ public class SampleResource {
 
   @Autowired
   private RedisTemplate<Object, Object> redisTemplate;
+
+  @Autowired
+  private RedisCacheManager redisCacheManager;
 
   @GET
   @Path("/get-users")
@@ -45,6 +49,13 @@ public class SampleResource {
   public String getCache(@PathParam("cacheKey") String cacheKey) {
     ValueOperations<Object, Object> valueOperations = redisTemplate.opsForValue();
     return valueOperations.get(cacheKey).toString();
+  }
+
+  @GET
+  @Path("/init-caches")
+  public String testInitCaches() {
+    redisCacheManager.initializeCaches();
+    return "";
   }
 
 }
