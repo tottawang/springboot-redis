@@ -1,5 +1,11 @@
 package com.sample.conf;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
@@ -15,6 +21,22 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 @EnableCaching
 public class CacheConfig extends CachingConfigurerSupport {
 
+  private static final String CACHE_NAME_USERS = "users";
+  private static final String CACHE_NAME_EMPTY_USERS = "emptyUsers";
+
+  @Bean
+  public CacheManagerCustomizer<RedisCacheManager> cacheManagerCustomizer() {
+    return cacheManager -> setCacheProperties(cacheManager);
+  }
+
+  private void setCacheProperties(RedisCacheManager cacheManager) {
+    cacheManager.setCacheNames(Arrays.asList(CACHE_NAME_USERS, CACHE_NAME_EMPTY_USERS));
+    final Map<String, Long> expires = new HashMap<>();
+    expires.put(CACHE_NAME_USERS, Long.valueOf(TimeUnit.MILLISECONDS.toSeconds(300000)));
+    cacheManager.setExpires(expires);
+    cacheManager.setUsePrefix(true);
+  }
+
   @Bean
   public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory cf) {
     RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<Object, Object>();
@@ -26,11 +48,6 @@ public class CacheConfig extends CachingConfigurerSupport {
   @Bean
   public CacheManager cacheManager(RedisTemplate<Object, Object> redisTemplate) {
     RedisCacheManager cacheManager = new RedisCacheManager(redisTemplate);
-    // TODO need to verify the side effect if we go with dynamic approach
-    // cacheManager.setCacheNames(Arrays.asList("users", "emptyUsers"));
-    cacheManager.setUsePrefix(true);
-    // Number of seconds before expiration. Defaults to unlimited (0)
-    cacheManager.setDefaultExpiration(1800L);
     return cacheManager;
   }
 
