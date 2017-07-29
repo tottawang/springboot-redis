@@ -7,11 +7,13 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.sample.conf.CacheConfig;
+import com.sample.conf.CacheCustomizerConfig;
+import com.sample.conf.CacheManagerConfig;
 import com.sample.conf.SampleApplication;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(classes = {SampleApplication.class, CacheConfig.class},
+@SpringBootTest(
+    classes = {SampleApplication.class, CacheCustomizerConfig.class, CacheManagerConfig.class},
     webEnvironment = SpringBootTest.WebEnvironment.NONE)
 public class SampleResourceTest {
 
