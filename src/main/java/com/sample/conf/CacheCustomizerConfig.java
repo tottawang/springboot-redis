@@ -2,11 +2,11 @@ package com.sample.conf;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
-import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -20,19 +20,17 @@ public class CacheCustomizerConfig {
 
   public static final String CACHE_NAME_USERS = "users";
 
-  @Bean
-  public CacheManagerCustomizers cacheManagerCustomizers() {
-    CacheManagerCustomizers customizers =
-        new CacheManagerCustomizers(Collections.singletonList(cacheManagerCustomizer()));
-    return customizers;
-  }
-
   /**
-   * Customize <code>CacheManager<code> to specify expires for users cache.
+   * <code>org.springframework.boot.autoconfigure.cache.CacheManagerCustomizers<code> can only
+   * inject list rather than single cache manager customizer.
    * 
    * @return
    */
   @Bean
+  public List<CacheManagerCustomizer<RedisCacheManager>> cacheManagerCustomizers() {
+    return Collections.singletonList(cacheManagerCustomizer());
+  }
+
   public CacheManagerCustomizer<RedisCacheManager> cacheManagerCustomizer() {
     return cacheManager -> {
       final Map<String, Long> expires = new HashMap<>();

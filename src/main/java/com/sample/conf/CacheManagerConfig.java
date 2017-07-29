@@ -14,7 +14,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class CacheManagerConfig extends CachingConfigurerSupport {
 
   /**
-   * Cache object for emptyUsers will be loaded at runtime
+   * Cache object for emptyUsers will be loaded at runtime and no customization is not needed.
    */
   private static final String CACHE_NAME_EMPTY_USERS = "emptyUsers";
 
