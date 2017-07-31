@@ -18,10 +18,10 @@ public class SampleResource {
   @Autowired
   private SampleRepository sampleRepository;
 
-  @Autowired
+  @Autowired(required = false)
   private RedisTemplate<Object, Object> redisTemplate;
 
-  @Autowired
+  @Autowired(required = false)
   private RedisCacheManager redisCacheManager;
 
   @GET

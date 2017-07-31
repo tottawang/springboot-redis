@@ -1,22 +1,39 @@
 package com.sample.conf;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-@Configuration
 @EnableCaching
-public class CacheManagerConfig extends CachingConfigurerSupport {
+@Configuration
+@ConditionalOnProperty(name = "SPRING_CACHE_TYPE", havingValue = "redis")
+public class CacheConfig extends CachingConfigurerSupport {
+
+  public static final String CACHE_NAME_USERS = "users";
 
   /**
-   * Cache object for emptyUsers will be loaded at runtime and no customization is not needed.
+   * Customize cache manager to setup expires on <code>users<code> cache instance.
    */
-  private static final String CACHE_NAME_EMPTY_USERS = "emptyUsers";
+  @Bean
+  public CacheManagerCustomizer<RedisCacheManager> cacheManagerCustomizer() {
+    return cacheManager -> {
+      final Map<String, Long> expires = new HashMap<>();
+      expires.put(CACHE_NAME_USERS, Long.valueOf(TimeUnit.MILLISECONDS.toSeconds(60000)));
+      cacheManager.setExpires(expires);
+    };
+  }
 
   @Bean
   public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory cf) {
@@ -34,5 +51,4 @@ public class CacheManagerConfig extends CachingConfigurerSupport {
       return sb.toString();
     };
   }
-
 }
