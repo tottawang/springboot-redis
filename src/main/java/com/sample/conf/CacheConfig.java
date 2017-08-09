@@ -1,18 +1,12 @@
 package com.sample.conf;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
@@ -24,22 +18,18 @@ public class CacheConfig extends CachingConfigurerSupport {
   public static final String CACHE_NAME_USERS = "users";
 
   /**
-   * Customize cache manager to setup expires on <code>users<code> cache instance.
+   * Must use specific name redisTemplate (or use same method name) in order to skip RedisTemplate
+   * bean setup by Redis auto configure.
+   * 
+   * @return
    */
-  @Bean
-  public CacheManagerCustomizer<RedisCacheManager> cacheManagerCustomizer() {
-    return cacheManager -> {
-      final Map<String, Long> expires = new HashMap<>();
-      expires.put(CACHE_NAME_USERS, Long.valueOf(TimeUnit.MILLISECONDS.toSeconds(60000)));
-      cacheManager.setExpires(expires);
-    };
-  }
-
-  @Bean
-  public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory cf) {
-    RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<Object, Object>();
+  @Bean(name = "redisTemplate")
+  public RedisTemplate<Object, Object> getRedisTemplate(
+      JedisConnectionFactory jedisConnectionFactory) {
+    RedisTemplate<Object, Object> redisTemplate = new RedisTemplate<>();
+    redisTemplate.setConnectionFactory(jedisConnectionFactory);
     redisTemplate.setKeySerializer(new StringRedisSerializer());
-    redisTemplate.setConnectionFactory(cf);
+    redisTemplate.afterPropertiesSet();
     return redisTemplate;
   }
 
