@@ -11,12 +11,14 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
+import com.sample.domain.UserRepository;
+
 @Path("/api")
 @Produces("text/plain")
 public class SampleResource {
 
   @Autowired
-  private SampleRepository sampleRepository;
+  private UserRepository sampleRepository;
 
   @Autowired(required = false)
   private RedisTemplate<Object, Object> redisTemplate;

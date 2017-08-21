@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJaxbJsonProvider;
-import com.sample.resources.SampleRepository;
+import com.sample.domain.UserRepository;
 import com.sample.resources.SampleResource;
 
 @Configuration
@@ -14,7 +14,7 @@ public class JerseyConfig extends ResourceConfig {
 
   public JerseyConfig() {
     register(SampleResource.class);
-    register(SampleRepository.class);
+    register(UserRepository.class);
 
     JacksonJaxbJsonProvider provider = new JacksonJaxbJsonProvider();
     ObjectMapper objectMapper = new ObjectMapper();

@@ -1,4 +1,4 @@
-package com.sample.resources;
+package com.sample.domain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,10 +7,8 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
-import com.sample.domain.User;
-
 @Repository
-public class SampleRepository {
+public class UserRepository {
 
   @Cacheable(value = "users", keyGenerator = "usersKeyGenerator")
   public List<User> getUsers() {
